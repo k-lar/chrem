@@ -2,8 +2,9 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
+using System.Text.RegularExpressions;
+/* using System.Xml; */
+/* using System.Xml.Serialization; */
 
 namespace Chrem {
 
@@ -35,6 +36,24 @@ namespace Chrem {
                     case "--version":
                         DisplayVersion();
                         arg_num++;
+                        continue;
+
+                    case "-s":
+                    case "--show":
+                        Operations.ShowReminders();
+                        arg_num++;
+                        continue;
+
+                    case "-r":
+                    case "--remove":
+                        if (arg_num+1 >= args.Length || args[arg_num+1] == "") {
+                            Console.WriteLine("No removal target.");
+                            arg_num = arg_num+2;
+                            continue;
+                        }
+                        int entry_num = Convert.ToInt16(args[arg_num+1]);
+                        Operations.RemoveEntry(entry_num);
+                        arg_num = arg_num+2;
                         continue;
 
                     case "-a":
@@ -90,23 +109,15 @@ namespace Chrem {
 
         // Parameterized Constructor
         // User defined
-        public Reminder(int id, string text)
-        {
+        public Reminder(int id, string text) {
             ID = id;
             Text = text;
-        }
-
-        public int GetID()
-        {
-            // Some way to get ID from XML
-            return 1;
         }
     }
 
 
     class Storage {
-
-        public static void AddReminder(string reminder) {
+        public static async void AddReminder(string reminder) {
             if (File.Exists(Operations.GetChremFilePath()) == false) {
                 Console.WriteLine("Chreminders file does not exist.");
                 Console.Write("Do you want to create it?" + Environment.NewLine + "[Y/n]: ");
@@ -115,28 +126,19 @@ namespace Chrem {
                     return;
                 } else {
                     CreateSource();
+                    Console.WriteLine("You can now add entries!");
                 }
             }
-            Console.WriteLine("Reminder is: " + reminder);
-
-            /* using (XmlWriter NewReminder = XmlWriter.Load(Operations.GetChremFilePath())) { */
-            /* NewReminder.WriteStartDocument(); */
-            /* NewReminder.WriteStartElement("Reminder"); */
-            /* NewReminder.WriteElementString("text", reminder); */
-            /* NewReminder.WriteEndElement(); */
-
-            /* NewReminder.Flush(); */
-            /* NewReminder.Close(); */
-            /* } */
-            /* using (XmlWriter writer = XmlWriter.Load(Operations.GetChremFilePath())); */
+            /* Console.WriteLine("Reminder is: " + reminder); */
+            string entry = "[" + Operations.GetNextNum(Operations.GetChremFilePath()) + "] - " + reminder;
+            using (StreamWriter file = new StreamWriter(Operations.GetChremFilePath(), append: true)) {
+                await file.WriteLineAsync(entry);
+            }
         }
 
         public static void CreateSource() {
-            /* var settings = new XmlWriterSettings() { */
-            /*     Indent = true, */
-            /* }; */
-            XmlWriter.Create(Operations.GetChremFilePath());
             Directory.CreateDirectory(Operations.GetChremDirPath());
+            File.Create(Operations.GetChremFilePath());
         }
 
         public static void RemoveSource() {
@@ -147,6 +149,51 @@ namespace Chrem {
     }
 
     class Operations {
+        public static string GetNextNum(string file) {
+            using (StreamReader reader = File.OpenText(file)) {
+                var lineNumber = 0;
+                String line;
+                do {
+                    lineNumber++;
+                } while ((line = reader.ReadLine()) != null);
+                return lineNumber.ToString();
+            }
+        }
+
+        public static async void RemoveEntry(int entry_num) {
+            var tempFile = Path.GetTempFileName();
+            int counter = 0;
+            foreach (string line in File.ReadLines(Operations.GetChremFilePath())) {
+                counter++;
+                string entry_text = line.Substring(line.IndexOf("- ") + 1);
+                string new_entry = "[" + Operations.GetNextNum(tempFile) + "] -" + entry_text;
+                if (counter != entry_num) {
+                    using (StreamWriter file = new StreamWriter(tempFile, append: true)) {
+                        await file.WriteLineAsync(new_entry);
+                    }
+                }
+            }
+            File.Delete(Operations.GetChremFilePath());
+            File.Move(tempFile, Operations.GetChremFilePath());
+        }
+
+        public static void ShowReminders() {
+            if (File.Exists(Operations.GetChremFilePath()) == false) {
+                return;
+            }
+
+            using (var reader = new StreamReader(Operations.GetChremFilePath())) {
+                string reminder;
+                do
+                {
+                    reminder = reader.ReadLine();
+                    if (reminder != null) {
+                        Console.WriteLine(reminder);
+                    }
+                } while (reminder != null);
+            }
+        }
+
         public static string CheckPlatform() {
             string windir = Environment.GetEnvironmentVariable("windir");
             if (!string.IsNullOrEmpty(windir) && windir.Contains(@"\") && Directory.Exists(windir)) {
@@ -195,15 +242,15 @@ namespace Chrem {
             string chreminders_file;
             switch (Operations.CheckPlatform()) {
                 case "Linux":
-                    chreminders_file = Path.Combine(dir_path, "chreminders.xml");
+                    chreminders_file = Path.Combine(dir_path, "chreminders.txt");
                     break;
 
                 case "Windows":
-                    chreminders_file = Path.Combine(dir_path, "chreminders.xml");
+                    chreminders_file = Path.Combine(dir_path, "chreminders.txt");
                     break;
 
                 case "Mac":
-                    chreminders_file = Path.Combine(dir_path, "chreminders.xml");
+                    chreminders_file = Path.Combine(dir_path, "chreminders.txt");
                     break;
 
                 default:
