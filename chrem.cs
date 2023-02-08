@@ -3,8 +3,6 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-/* using System.Xml; */
-/* using System.Xml.Serialization; */
 
 namespace Chrem {
 
@@ -51,10 +49,18 @@ namespace Chrem {
                             arg_num = arg_num+2;
                             continue;
                         }
-                        int entry_num = Convert.ToInt16(args[arg_num+1]);
-                        Operations.RemoveEntry(entry_num);
+                        if (args[arg_num+1].All(char.IsDigit) == true && args[arg_num+1] != "") {
+                            int entry_num = Convert.ToInt16(args[arg_num+1]);
+                            Operations.RemoveEntry(entry_num);
+                            arg_num = arg_num+2;
+                            continue;
+                        }
                         arg_num = arg_num+2;
                         continue;
+
+                        // Implement 1,2,3 parameter that splits into array
+                        // Descending bubble sort to properly format numbers
+
 
                     case "-a":
                     case "--add":
