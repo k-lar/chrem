@@ -50,6 +50,7 @@ namespace Chrem {
                             continue;
                         }
                         if (args[arg_num+1].All(char.IsDigit) == true && args[arg_num+1] != "") {
+
                             int entry_num = Convert.ToInt16(args[arg_num+1]);
                             Operations.RemoveEntry(entry_num);
                             arg_num = arg_num+2;
@@ -92,13 +93,12 @@ namespace Chrem {
         private static void DisplayHelp() {
             string help_msg =
 @"Usage:
-  chrem                    Creates $HOME/.config/chrem-reminders file
+  chrem                    Creates $HOME/.config/chreminders.txt file
+                           WINDOWS: %appdata%\chrem\chreminders.txt
   chrem -a                 Add an entry inside the reminders file
   chrem -r                 Remove an entry [or multiple entries, seperated with "",""]
-  chrem -rn                Renumber entries inside the reminders file
-  chrem -R                 Remove $HOME/.config/chrem-reminders file
+  chrem -R                 Remove chreminders.txt file
   chrem --show             Prints your reminders to the terminal
-  chrem --add-to-sh        Adds reminder autodetection inside bash|zsh|fish
   chrem --version          Prints what version of chrem you have installed";
             Console.WriteLine(help_msg);
         }
@@ -158,7 +158,7 @@ namespace Chrem {
         public static string GetNextNum(string file) {
             using (StreamReader reader = File.OpenText(file)) {
                 var lineNumber = 0;
-                String line;
+                string line;
                 do {
                     lineNumber++;
                 } while ((line = reader.ReadLine()) != null);
