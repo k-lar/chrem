@@ -22,27 +22,27 @@ mcs chrem.cs
 **Windows binary:**
 
 
-## Usage
+## Usage (Linux)
 
 ```console
 # Adding entries:
-brem -a "Very important note"
+mono chrem.exe -a "Very important note"
 
 # Removing entries:
 # This one removes entry [1]
-brem -r 1
+mono chrem.exe -r 1
 
 # This removes entries [7], [3] and [2]
-brem -r 7 -r 3 -r 2
+mono chrem.exe -r 7 -r 3 -r 2
 
 # Display entries:
-brem --show
+mono chrem.exe --show
 
 # You can chain commands like so:
-brem -r 3 -a "Meeting at 12:00" --show
+mono chrem.exe -r 3 -a "Meeting at 12:00" --show
 
 # For additional commands
-brem -h
+mono chrem.exe -h
 ```
 
 Example:
