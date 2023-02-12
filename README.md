@@ -19,7 +19,8 @@ git clone https://gitlab.com/k_lar/chrem; cd chrem
 mcs chrem.cs
 ```
 
-**Windows binary:**
+[Download windows binary](https://gitlab.com/k_lar/chrem/uploads/9ea2eb741e248cd6722a6118d0273d2f/chrem.zip
+)
 
 
 ## Usage (Linux)
