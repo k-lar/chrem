@@ -38,7 +38,7 @@ namespace Chrem {
 
                     case "-s":
                     case "--show":
-                        Operations.ShowReminders();
+                        Operations.DrawReminders();
                         arg_num++;
                         continue;
 
@@ -169,6 +169,18 @@ namespace Chrem {
             }
         }
 
+        public static int GetLongestLine() {
+            var lines = File.ReadLines(GetChremFilePath());
+            var Maximum = "";
+            foreach (string line in lines) {
+                if (Maximum.Length < line.Length) {
+                    Maximum = line;
+                }
+            }
+            return Maximum.Length-6;
+        }
+
+
         public static async void RemoveEntry(int entry_num) {
             var tempFile = Path.GetTempFileName();
             int counter = 0;
@@ -184,6 +196,40 @@ namespace Chrem {
             }
             File.Delete(Operations.GetChremFilePath());
             File.Move(tempFile, Operations.GetChremFilePath());
+        }
+
+        public static void DrawReminders() {
+            int bottom_frame = GetLongestLine();
+            int half_frame = GetLongestLine()/2;
+            int side_frame = 0;
+            string side = "";
+            if (bottom_frame > 13 && bottom_frame < 80) {
+                while (side_frame < half_frame) {
+                    side = side + "#";
+                    side_frame++;
+                }
+
+                bottom_frame = side_frame*2+11;
+                int bottom_frame_counter = 0;
+                string bottom = "";
+                while (bottom_frame_counter < bottom_frame) {
+                    bottom = bottom + "#";
+                    bottom_frame_counter++;
+                }
+
+                Console.WriteLine(side + " Reminders " + side);
+                Operations.ShowReminders();
+                Console.WriteLine(bottom + Environment.NewLine);
+
+            } else if (bottom_frame > 80) {
+                Console.WriteLine("################################## Reminders ##################################");
+                Operations.ShowReminders();
+                Console.WriteLine("###############################################################################");
+            } else {
+                Console.WriteLine("# Reminders #");
+                Operations.ShowReminders();
+                Console.WriteLine("#############");
+            }
         }
 
         public static void ShowReminders() {
