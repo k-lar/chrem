@@ -177,7 +177,7 @@ namespace Chrem {
                     Maximum = line;
                 }
             }
-            return Maximum.Length-6;
+            return Maximum.Length;
         }
 
 
