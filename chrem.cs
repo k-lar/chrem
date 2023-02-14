@@ -107,7 +107,7 @@ namespace Chrem {
         }
 
         private static void DisplayVersion() {
-            string version = "1.0.0";
+            string version = "1.1.0";
             Console.WriteLine(version);
         }
     }
