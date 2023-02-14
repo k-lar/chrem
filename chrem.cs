@@ -49,8 +49,15 @@ namespace Chrem {
                             arg_num = arg_num+2;
                             continue;
                         }
-                        if (args[arg_num+1].All(char.IsDigit) == true && args[arg_num+1] != "") {
-
+                        if (args[arg_num+1].Contains(',') == true && args[arg_num+1].Length > 1) {
+                            int[] nums = Array.ConvertAll(args[arg_num+1].Split(','), int.Parse);
+                            Array.Sort(nums);
+                            Array.Reverse(nums);
+                            for (int i = 0; i < nums.Length; i++) {
+                                //Console.WriteLine("Removing:" + nums[i]);
+                                Operations.RemoveEntry(nums[i]);
+                            }
+                        } else {
                             int entry_num = Convert.ToInt16(args[arg_num+1]);
                             Operations.RemoveEntry(entry_num);
                             arg_num = arg_num+2;
@@ -58,10 +65,6 @@ namespace Chrem {
                         }
                         arg_num = arg_num+2;
                         continue;
-
-                        // Implement 1,2,3 parameter that splits into array
-                        // Descending bubble sort to properly format numbers
-
 
                     case "-a":
                     case "--add":
@@ -94,7 +97,7 @@ namespace Chrem {
             string help_msg =
 @"Usage:
   chrem                    Creates $HOME/.config/chreminders.txt file
-                           WINDOWS: %appdata%\chrem\chreminders.txt
+                           WINDOWS: %appdata%\local\chrem\chreminders.txt
   chrem -a                 Add an entry inside the reminders file
   chrem -r                 Remove an entry [or multiple entries, seperated with "",""]
   chrem -R                 Remove chreminders.txt file
