@@ -219,7 +219,7 @@ namespace Chrem {
 
                 Console.WriteLine(side + " Reminders " + side);
                 Operations.ShowReminders();
-                Console.WriteLine(bottom + Environment.NewLine);
+                Console.WriteLine(bottom);
 
             } else if (bottom_frame > 80) {
                 Console.WriteLine("################################## Reminders ##################################");
