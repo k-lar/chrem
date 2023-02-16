@@ -7,7 +7,14 @@ using System.Text.RegularExpressions;
 namespace Chrem {
 
     class Program {
+
         public static void Main(string[] args) {
+            bool IsRunningOnMono = (Type.GetType ("Mono.Runtime") != null);
+            if (IsRunningOnMono == false) {
+                Console.WriteLine("Not running on mono!");
+                Environment.Exit(1);
+            }
+
             if (args.Length == 0) {
                 if (File.Exists(Operations.GetChremFilePath()) == false) {
                     Storage.CreateSource();
@@ -127,7 +134,7 @@ namespace Chrem {
         }
 
         private static void DisplayVersion() {
-            string version = "1.1.0";
+            string version = "1.1.1";
             Console.WriteLine(version);
         }
     }
