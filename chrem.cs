@@ -50,15 +50,35 @@ namespace Chrem {
                             continue;
                         }
                         if (args[arg_num+1].Contains(',') == true && args[arg_num+1].Length > 1) {
-                            int[] nums = Array.ConvertAll(args[arg_num+1].Split(','), int.Parse);
+                            int[] nums;
+                            try {
+                                nums = Array.ConvertAll(args[arg_num+1].Split(','), int.Parse);
+                            } catch (Exception error) {
+                                Console.WriteLine(error.Message);
+                                arg_num = arg_num+2;
+                                continue;
+                            }
                             Array.Sort(nums);
                             Array.Reverse(nums);
                             for (int i = 0; i < nums.Length; i++) {
                                 //Console.WriteLine("Removing:" + nums[i]);
-                                Operations.RemoveEntry(nums[i]);
+                                try {
+                                    Operations.RemoveEntry(nums[i]);
+                                } catch (Exception error) {
+                                    Console.WriteLine(error.Message);
+                                    arg_num = arg_num+2;
+                                    continue;
+                                }
                             }
                         } else {
-                            int entry_num = Convert.ToInt16(args[arg_num+1]);
+                            int entry_num;
+                            try {
+                                entry_num = Convert.ToInt16(args[arg_num+1]);
+                            } catch (Exception error) {
+                                Console.WriteLine(error.Message);
+                                arg_num = arg_num+2;
+                                continue;
+                            }
                             Operations.RemoveEntry(entry_num);
                             arg_num = arg_num+2;
                             continue;
